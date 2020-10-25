@@ -1,7 +1,7 @@
 {
     "name": "slowprog/messenger-beanstalkd",
     "type": "symfony-bundle",
-    "description": "Beanstalkd Queue transport for Symfony's Messenger component.",
+    "description": "Beanstalkd transport for Symfony's Messenger component.",
     "keywords": ["symfony", "bundle", "messenger", "transport" ,"beanstalkd", "queue"],
     "license": "MIT",
     "authors": [
@@ -26,8 +26,5 @@
     "require-dev": {
         "phpunit/phpunit": "^9.0",
         "symfony/var-dumper": "^4.3|^5.0"
-    },
-    "scripts": {
-        "test": "phpunit tests --testdox"
     }
 }

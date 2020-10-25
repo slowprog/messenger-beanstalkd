@@ -1,6 +1,6 @@
 # Messenger Beanstalkd Transport
 
-Beanstalkd Queue transport for Symfony's Messenger component.
+Beanstalkd transport for Symfony's Messenger component.
 
 ## Installation
 
@@ -27,7 +27,7 @@ framework:
             beanstalkd_queues:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
                 options:
-                    queue_name: '%your_queue_name%'
+                    queue_name: '%your_tube_name%'
                     reserve_timeout: '%reserve_timeout_in_seconds%'
                     connect_timeout: '%connect_timeout_in_seconds%'
 ```
