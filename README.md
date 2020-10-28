@@ -12,6 +12,15 @@ composer require slowprog/messenger-beanstalkd
 
 ## Basic usage
 
+Add the bundle to *./config/bundles.php*:
+
+```
+return [
+    // ...
+    SlowProg\Beanstalkd\BeanstalkdTransportBundle::class => ['all' => true],
+];
+```
+
 Set environment variable:
 
 ```
