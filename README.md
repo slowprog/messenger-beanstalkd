@@ -24,7 +24,7 @@ return [
 Set environment variable:
 
 ```
-MESSENGER_TRANSPORT_DSN=beanstalkd://%beanstalkd_host%:%beanstalkd_port%
+MESSENGER_TRANSPORT_DSN=beanstalkd://<beanstalkd_host>:<beanstalkd_port>
 ```
 
 Set messenger transport config:
