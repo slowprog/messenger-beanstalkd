@@ -11,6 +11,7 @@ use Symfony\Component\Messenger\Transport\TransportInterface;
 use Symfony\Component\Messenger\Stamp\TransportMessageIdStamp;
 use Symfony\Component\Messenger\Transport\Serialization\PhpSerializer;
 use SlowProg\Beanstalkd\Messenger\Stamp\JobStamp;
+use SlowProg\Beanstalkd\Messenger\Stamp\TimeToTunStamp;
 
 class BeanstalkTransport implements TransportInterface
 {
@@ -153,12 +154,17 @@ class BeanstalkTransport implements TransportInterface
 
         /** @var DelayStamp|null $delayStamp */
         $delayStamp = $envelope->last(DelayStamp::class);
-        $delay      = $delayStamp ? $delayStamp->getDelay() : 0;
+        $delay      = $delayStamp ? $delayStamp->getDelay() : PheanstalkInterface::DEFAULT_DELAY;
+
+        /** @var TimeToRunStamp|null $timeToRunStamp */
+        $timeToRunStamp = $envelope->last(TimeToRunStamp::class);
+        $timeToRun      = $timeToRunStamp ? $timeToRunStamp->getTtl() : PheanstalkInterface::DEFAULT_TTR;
 
         $this->getConnection()->useTube($this->tube)->put(
             $encodedMessage['body'],
             PheanstalkInterface::DEFAULT_PRIORITY,
             $delay,
+            $timeToRun
         );
 
         return $envelope;
