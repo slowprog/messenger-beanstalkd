@@ -2,7 +2,6 @@
 
 namespace SlowProg\Beanstalkd\Messenger\Stamp;
 
-use Pheanstalk\Job;
 use Symfony\Component\Messenger\Stamp\StampInterface;
 
 class TimeToRunStamp implements StampInterface

@@ -5,13 +5,14 @@ namespace SlowProg\Beanstalkd\Messenger\Transport;
 use LogicException;
 use Pheanstalk\Pheanstalk;
 use Pheanstalk\Contract\PheanstalkInterface;
+use SlowProg\Beanstalkd\Messenger\Stamp\PriorityStamp;
+use SlowProg\Beanstalkd\Messenger\Stamp\TimeToRunStamp;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\Messenger\Transport\TransportInterface;
 use Symfony\Component\Messenger\Stamp\TransportMessageIdStamp;
 use Symfony\Component\Messenger\Transport\Serialization\PhpSerializer;
 use SlowProg\Beanstalkd\Messenger\Stamp\JobStamp;
-use SlowProg\Beanstalkd\Messenger\Stamp\TimeToTunStamp;
 
 class BeanstalkTransport implements TransportInterface
 {
@@ -80,10 +81,11 @@ class BeanstalkTransport implements TransportInterface
     private $connection;
 
     /**
-     * @param string $host
-     * @param int    $port
-     * @param int    $timeout
-     * @param string $tube
+     * @param string   $host
+     * @param int      $port
+     * @param string   $tube
+     * @param int|null $reserveTimeout
+     * @param int|null $connectTimeout
      */
     public function __construct(
         ?string $host = self::HOST_DEFAULT,
@@ -95,8 +97,8 @@ class BeanstalkTransport implements TransportInterface
         $this->host           = $host ?? self::HOST_DEFAULT;
         $this->port           = $port ?? self::PORT_DEFAULT;
         $this->tube           = $tube ?? self::TUBE_DEFAULT;
-        $this->reserveTimeout = $timeout ?? self::CONNECT_TIMEOUT_DEFAULT;
-        $this->connectTimeout = $timeout ?? self::CONNECT_TIMEOUT_DEFAULT;
+        $this->reserveTimeout = $reserveTimeout ?? self::CONNECT_TIMEOUT_DEFAULT;
+        $this->connectTimeout = $connectTimeout ?? self::CONNECT_TIMEOUT_DEFAULT;
         $this->serializer     = new PhpSerializer();
     }
 
@@ -158,11 +160,15 @@ class BeanstalkTransport implements TransportInterface
 
         /** @var TimeToRunStamp|null $timeToRunStamp */
         $timeToRunStamp = $envelope->last(TimeToRunStamp::class);
-        $timeToRun      = $timeToRunStamp ? $timeToRunStamp->getTtl() : PheanstalkInterface::DEFAULT_TTR;
+        $timeToRun      = $timeToRunStamp ? $timeToRunStamp->getTtr() : PheanstalkInterface::DEFAULT_TTR;
+
+        /** @var PriorityStamp|null $priorityStamp */
+        $priorityStamp = $envelope->last(PriorityStamp::class);
+        $priority      = $priorityStamp ? $priorityStamp->getPriority() : PheanstalkInterface::DEFAULT_PRIORITY;
 
         $this->getConnection()->useTube($this->tube)->put(
             $encodedMessage['body'],
-            PheanstalkInterface::DEFAULT_PRIORITY,
+            $priority,
             $delay,
             $timeToRun
         );
